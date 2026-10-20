@@ -24,7 +24,7 @@ AI Competitor Pricing Monitoring is an n8n automation prototype that checks comp
   </tr>
 </table>
 
-!The first run establishes a pricing baseline, and subsequent runs compare current pricing with previously stored data and email a summary of the results. 
+> The first run establishes a pricing baseline, and subsequent runs compare current pricing with previously stored data and email a summary of the results. 
   
 ## Requirements
 - An n8n account for workflow
@@ -39,6 +39,8 @@ AI Competitor Pricing Monitoring is an n8n automation prototype that checks comp
 4. create the columns your workflow uses, such as Competitor Name, URL, Previous Pricing, Last updated, and Differences - Summary
 5. select the spreadsheet, set the report recipient, and choose the monitoring schedule
 
+> [!WARNING]
+> n8n, OpenAI, and Decodo usage may involve costs.
 ## Usage
 
 ➡️ **Add competitors:** Add competitor names and pricing-page URLs to the spreadsheet.
@@ -50,10 +52,6 @@ AI Competitor Pricing Monitoring is an n8n automation prototype that checks comp
 ➡️ **Check your email:** Check Gmail for the consolidated report.
 
 ➡️ **Enable scheduled monitoring:** Publish or activate the workflow to run it on the configured schedule.
-
-> [!WARNING]
-> n8n, OpenAI, and Decodo usage may involve costs.
-
 
 
 Last tested: 20.10.2026
