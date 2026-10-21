@@ -1,0 +1,487 @@
+{
+  "name": "1.5uzd",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        16,
+        -160
+      ],
+      "id": "be890c45-281c-48c3-bc1b-037dc9b61353",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0",
+          "mode": "list",
+          "cachedResultName": "1.51",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Lapa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        -160
+      ],
+      "id": "54723df9-4a7f-4b43-a30f-66c1954351f8",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VwiXvSflzjrFnxEx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please scrape and analyze the pricing page at this URL: {{ $json.URL }}\n\nExtract the current pricing information and compare it to the previous pricing data:\nPrevious Pricing:{{ $json['Previous Pricing'] }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a pricing analysis specialist. Your task is to scrape pricing pages and compare them with previous data and detect changes.\n\nUse the scrape_as_markdown tool to get the webpage content, then analyze the pricing information. When scraping, use fullResponse option.\n\nFocus specifically on:\n1. All pricing plans available\n2. Price changes from the previous data\n3. Feature changes in each plan\n\nReturn only these 2 fields in valid JSON:\n1.'pricing_summary' - A textual description of ALL current pricing plans, including plan names, prices, and top 5 features for each plan\n2. 'differences_summary' - A concise summary of any price or feature differences compared to the previous pricing data. Focus only on actual changes in prices or major features.\n\n-Be precise and only report clearly visible instruction"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        528,
+        -288
+      ],
+      "id": "631b13ec-a36d-462e-b2eb-be0f598f0664",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"Plan Comparison Schema\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"pricing_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A textual description of the pricing, including the plan's name, price, and top 5 features.\"\n    },\n    \"differences_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary of the differences between the previous and current plans, focusing on changes. If no changes detected, just simply state it -- 'No Changes'\"\n    }\n  },\n  \"required\": [\"pricing_summary\", \"differences_summary\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        -64
+      ],
+      "id": "fa89f127-a41d-438e-b58f-5d8368c14b87",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -32
+      ],
+      "id": "551251db-c7be-4e4f-babf-ac204196438e",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        928,
+        -160
+      ],
+      "id": "49096d92-5fe6-49af-a306-46af89eae909",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0",
+          "mode": "list",
+          "cachedResultName": "1.51",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Lapa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Competitor Name": "={{ $json['Competitor Name'] }}",
+            "URL": "={{ $json.URL }}",
+            "Last updated": "={{ $today.format('yyyy-MM-dd')}}",
+            "Previous Pricing": "={{ $('AI Agent').item.json.output.pricing_summary }}",
+            "Differences - Summary": "={{ $('AI Agent').item.json.output.differences_summary }}"
+          },
+          "matchingColumns": [
+            "Competitor Name"
+          ],
+          "schema": [
+            {
+              "id": "Competitor Name",
+              "displayName": "Competitor Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last updated",
+              "displayName": "Last updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Previous Pricing",
+              "displayName": "Previous Pricing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Differences - Summary",
+              "displayName": "Differences - Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        -160
+      ],
+      "id": "89bf4428-4539-41e9-8fcf-7252df2cab4f",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VwiXvSflzjrFnxEx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Competitor Data:\nCompetitor Data:\n{{ JSON.stringify($json.Competitors.map(item => ({\n  Competitor: item['Competitor Name'],\n  'Differences - Summary': item['Differences - Summary']\n})), null, 2) }}",
+        "options": {
+          "systemMessage": "you are a competitive intelligence analyst. Your role is to synthesize pricing data from multiple competitors and create actionable business intelligence report.\n\nThe input is Competitor Data.\n\nAnalyze the provided competitor pricing data and create a professional summary that highlights key pricing changes\n\nWrite in a clear, business-focused tone suitable for executives and strategy teams.\n\nIf no significant changes are detected, state : 'No changes in pricing for any plans.' No need to expand beyond this.\n\nThe output should be in HTML format. HTML Email Formatting Rules:\n\n-Use a clean, modern business email design.\n-Use bold text for competitor names, pricing changes, and important findings.\n-Add a clear main heading: \"Competitor Pricing Update\".\n- If there is a change: in table use these table heading: Item, Precious price, Current Price, Difference\n-Create a separate section for each competitor.\n-Highlight detected pricing changes with a light yellow background.\n-Highlight \"No Changes\" with a light green background.\n-Use tables where helpful to organize pricing comparisons.\n-Use inline CSS for styling, compatible with Gmail.\n-Use only the competitor data provided. Do not invent changes.\n- do not add any additional coments about how the data was gathered.\n-Return only valid HTML code, without Markdown code fences.\n- Return only the final HTML email content. Do not include any followup suggestions or offers."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1600,
+        -160
+      ],
+      "id": "3cf7ec6f-8593-4217-995e-aad99ff46b7c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1600,
+        48
+      ],
+      "id": "6a1d217c-e025-46e5-abe4-59f29604bf7d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "milapele123@gmail.com",
+        "subject": "=Daily Competitive Princing report - {{ $today.format('MMMM dd, yyyy') }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1952,
+        -160
+      ],
+      "id": "e8583169-fe70-4a9f-8c62-13e9fae59e0b",
+      "name": "Send a message",
+      "webhookId": "a36ef16a-83d2-4619-b6e0-9710188c25e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XET5OSOBHV6E8Bla",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://data.decodo.com/v1/scrape",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $fromAI('url', 'Website URL to scrape', 'string') }}\",\n  \"proxy_pool\": \"premium\",\n  \"headless\": \"html\",\n  \"markdown\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        608,
+        80
+      ],
+      "id": "49b89bfb-1795-4a40-a464-aaa08c2d35f2",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "MMqr4kijx5xvddpA",
+          "name": "Header Auth account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "Competitors",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        -160
+      ],
+      "id": "62957f34-1706-45d7-9ec0-14e6eea80c6f",
+      "name": "Aggregate"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "63b7ec12-f27b-480b-b2e7-d3d7170147fe",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "deef11adbf94b0e103b0f74c2ca1b2c67ed68ab2265993b955a750ed77e3260a"
+  },
+  "nodeGroups": [],
+  "id": "YCPPDH7XKLJNVVOI",
+  "tags": []
+}
