@@ -5,5 +5,10 @@
 - Added the workflow JSON file to the GitHub repository.
 
 ### Status
-- Existing published n8n workflow.
+- Unpublished prototype.
+- Workflow without the IF node.
 - Version saved for tracking and documentation.
+
+### Notes
+- Original workflow created 2026-10-20.
+- Version added to GitHub on 2026-10-21.
