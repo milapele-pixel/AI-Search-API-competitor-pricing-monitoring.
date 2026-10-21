@@ -1,0 +1,1207 @@
+{
+  "updatedAt": "2026-10-21T16:18:51.184Z",
+  "createdAt": "2026-10-21T15:42:44.789Z",
+  "id": "nvWXywZVZQDG4iM0",
+  "name": "4.3.uzd",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        16,
+        -160
+      ],
+      "id": "ae212e7a-97f2-497e-b258-3206b9a12039",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0",
+          "mode": "list",
+          "cachedResultName": "1.51",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Lapa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        -160
+      ],
+      "id": "8aa4d0e0-9df0-4df3-a218-0b890f517355",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VwiXvSflzjrFnxEx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Please scrape and analyze the pricing page at this URL: {{ $json.URL }}\n\nExtract the current pricing information and compare it to the previous pricing data:\nPrevious Pricing:{{ $json['Previous Pricing'] }}\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a pricing analysis specialist. Your task is to scrape pricing pages and compare them with previous data and detect changes.\n\nUse the scrape_as_markdown tool to get the webpage content, then analyze the pricing information. When scraping, use fullResponse option.\n\nFocus specifically on:\n1. All pricing plans available\n2. Price changes from the previous data\n3. Feature changes in each plan\n\nReturn only these 2 fields in valid JSON:\n1.'pricing_summary' - A textual description of all current pricing plans, including plan names, prices, and top 5 features for each plan\n2. 'differences_summary' - A summary of all price or feature differences compared to the previous pricing data. Focus on every pricing change and features. \n\n\n\n-if the page has changes in pricing or features, return the information for that exact page only with the new price or feature information. Do not list other features where there are no changes.\n\n-Only then if Previous pricing and features are the same as now, return exactly 'No Changes'\n\n-Be precise, read and analyze the previous and current information carefully and report clearly visible instruction"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        -304
+      ],
+      "id": "46879a0f-6d7e-423f-a275-bc93d3c7d1f5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"Plan Comparison Schema\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"pricing_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A textual description of the pricing, including the plan's name, price, and top 5 features.\"\n    },\n    \"differences_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary of the differences between the previous and current plans, focusing on changes. If no changes detected, just simply state it -- 'No Changes'\"\n    }\n  },\n  \"required\": [\"pricing_summary\", \"differences_summary\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        -64
+      ],
+      "id": "245b7cb2-ba5a-4a35-8a81-d2fac090a32f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        -64
+      ],
+      "id": "7aba629b-b43b-4979-b6a6-2334f33006c1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        928,
+        -160
+      ],
+      "id": "137a9e2c-6203-4908-951d-c3b3e55a5a2f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0",
+          "mode": "list",
+          "cachedResultName": "1.51",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Lapa1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Competitor Name": "={{ $json['Competitor Name'] }}",
+            "URL": "={{ $json.URL }}",
+            "Last updated": "={{ $today.format('yyyy-MM-dd')}}",
+            "Previous Pricing": "={{ $('AI Agent').item.json.output.pricing_summary }}",
+            "Differences - Summary": "={{ $('AI Agent').item.json.output.differences_summary }}"
+          },
+          "matchingColumns": [
+            "Competitor Name"
+          ],
+          "schema": [
+            {
+              "id": "Competitor Name",
+              "displayName": "Competitor Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last updated",
+              "displayName": "Last updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Previous Pricing",
+              "displayName": "Previous Pricing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Differences - Summary",
+              "displayName": "Differences - Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1152,
+        -160
+      ],
+      "id": "c9924bf0-613e-4572-91df-f2071fbe9877",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VwiXvSflzjrFnxEx",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Competitor Data:\nCompetitor Data:\n{{ JSON.stringify($json.Competitors.map(item => ({\n  Competitor: item['Competitor Name'],\n  'Differences - Summary': item['Differences - Summary']\n})), null, 2) }}",
+        "options": {
+          "systemMessage": "you are a competitive intelligence analyst. Your role is to synthesize pricing data from multiple competitors and create actionable business intelligence report.\n\nThe input is Competitor Data.\n\nAnalyze the provided competitor pricing data and create a professional summary that highlights key pricing changes\n\nWrite in a clear, business-focused tone suitable for executives and strategy teams.\n\nIf no significant changes are detected, state : 'No changes in pricing for any plans.' No need to expand beyond this.\n\nThe output should be in HTML format. HTML Email Formatting Rules:\n\n-Use a clean, modern business email design.\n-Use bold text for competitor names, pricing changes, and important findings.\n-Add a clear main heading: \"Competitor Pricing Update\".\n- If there is a change: in table use these table heading: Item, Precious price, Current Price, Difference\n-Create a separate section for each competitor.\n-Highlight detected pricing changes with a light yellow background.\n-Highlight \"No Changes\" with a light green background.\n-Use tables where helpful to organize pricing comparisons.\n-Use inline CSS for styling, compatible with Gmail.\n-Use only the competitor data provided. Do not invent changes.\n- do not add any additional coments about how the data was gathered.\n-Return only valid HTML code, without Markdown code fences.\n- Return only the final HTML email content. Do not include any followup suggestions or offers."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1872,
+        -128
+      ],
+      "id": "b1cf1cec-89dd-4f6d-9577-d090e48377a7",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1856,
+        16
+      ],
+      "id": "c2648e4f-c7c7-4be9-9c63-61aea2f19285",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "milapele123@gmail.com",
+        "subject": "=Daily Competitive Princing report - {{ $today.format('MMMM dd, yyyy') }}",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        -144
+      ],
+      "id": "55625aa1-b759-46e9-9ae5-bc588c598dc2",
+      "name": "Send a message",
+      "webhookId": "04df3256-3055-4117-8b5b-c0f12f98bcfc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XET5OSOBHV6E8Bla",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://data.decodo.com/v1/scrape",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"url\": \"{{ $fromAI('url', 'Website URL to scrape', 'string') }}\",\n  \"proxy_pool\": \"premium\",\n  \"headless\": \"html\",\n  \"markdown\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        608,
+        -64
+      ],
+      "id": "0a90fd48-d77f-40a6-842e-bac6058149f8",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "MMqr4kijx5xvddpA",
+          "name": "Header Auth account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "Competitors",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        -160
+      ],
+      "id": "198f9f26-39ae-44f3-9447-2fc8ac55e116",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ae7f4f6b-45c5-4f3f-b736-e496527b1537",
+              "leftValue": "={{ $json.Competitors[0]['Differences - Summary'] }}",
+              "rightValue": "No Changes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "91599bf8-6ea3-4dbb-baaa-3c755aebc496",
+              "leftValue": "={{ $json.Competitors[1]['Differences - Summary'] }}",
+              "rightValue": "No Changes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "f366ebae-1292-46ba-afa8-0e507d9e6175",
+              "leftValue": "={{ $json.Competitors[2]['Differences - Summary'] }}",
+              "rightValue": "No Changes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1600,
+        -160
+      ],
+      "id": "173f864d-ed49-48e5-8432-a0b98b1ebaa9",
+      "name": "Are there any changes?"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Are there any changes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Are there any changes?": {
+      "main": [
+        [],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "986e4dd9-7bd8-4e5b-b0a0-6b9d8bd83962",
+  "activeVersionId": "986e4dd9-7bd8-4e5b-b0a0-6b9d8bd83962",
+  "versionCounter": 2,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "parentFolder": null,
+  "activeVersion": {
+    "updatedAt": "2026-10-21T16:38:36.000Z",
+    "createdAt": "2026-10-21T16:17:42.257Z",
+    "versionId": "986e4dd9-7bd8-4e5b-b0a0-6b9d8bd83962",
+    "workflowId": "nvWXywZVZQDG4iM0",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.4,
+        "position": [
+          16,
+          -160
+        ],
+        "id": "ae212e7a-97f2-497e-b258-3206b9a12039",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0",
+            "mode": "list",
+            "cachedResultName": "1.51",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Lapa1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit#gid=0"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          240,
+          -160
+        ],
+        "id": "8aa4d0e0-9df0-4df3-a218-0b890f517355",
+        "name": "Get row(s) in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "VwiXvSflzjrFnxEx",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Please scrape and analyze the pricing page at this URL: {{ $json.URL }}\n\nExtract the current pricing information and compare it to the previous pricing data:\nPrevious Pricing:{{ $json['Previous Pricing'] }}\n",
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You are a pricing analysis specialist. Your task is to scrape pricing pages and compare them with previous data and detect changes.\n\nUse the scrape_as_markdown tool to get the webpage content, then analyze the pricing information. When scraping, use fullResponse option.\n\nFocus specifically on:\n1. All pricing plans available\n2. Price changes from the previous data\n3. Feature changes in each plan\n\nReturn only these 2 fields in valid JSON:\n1.'pricing_summary' - A textual description of all current pricing plans, including plan names, prices, and top 5 features for each plan\n2. 'differences_summary' - A summary of all price or feature differences compared to the previous pricing data. Focus on every pricing change and features. \n\n\n\n-if the page has changes in pricing or features, return the information for that exact page only with the new price or feature information. Do not list other features where there are no changes.\n\n-Only then if Previous pricing and features are the same as now, return exactly 'No Changes'\n\n-Be precise, read and analyze the previous and current information carefully and report clearly visible instruction"
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          480,
+          -304
+        ],
+        "id": "46879a0f-6d7e-423f-a275-bc93d3c7d1f5",
+        "name": "AI Agent"
+      },
+      {
+        "parameters": {
+          "schemaType": "manual",
+          "inputSchema": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"title\": \"Plan Comparison Schema\",\n  \"type\": \"object\",\n  \"properties\": {\n    \"pricing_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A textual description of the pricing, including the plan's name, price, and top 5 features.\"\n    },\n    \"differences_summary\": {\n      \"type\": \"string\",\n      \"description\": \"A concise summary of the differences between the previous and current plans, focusing on changes. If no changes detected, just simply state it -- 'No Changes'\"\n    }\n  },\n  \"required\": [\"pricing_summary\", \"differences_summary\"]\n}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3,
+        "position": [
+          736,
+          -64
+        ],
+        "id": "245b7cb2-ba5a-4a35-8a81-d2fac090a32f",
+        "name": "Structured Output Parser"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          480,
+          -64
+        ],
+        "id": "7aba629b-b43b-4979-b6a6-2334f33006c1",
+        "name": "OpenAI Chat Model",
+        "credentials": {
+          "openAiApi": {
+            "id": null,
+            "name": "",
+            "__aiGatewayManaged": true
+          }
+        }
+      },
+      {
+        "parameters": {
+          "mode": "combine",
+          "combineBy": "combineByPosition",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          928,
+          -160
+        ],
+        "id": "137a9e2c-6203-4908-951d-c3b3e55a5a2f",
+        "name": "Merge"
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0",
+            "mode": "list",
+            "cachedResultName": "1.51",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Lapa1",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OjliQpl3ldhkKWHqndMO0g05oM_nC9gLAvJ2vLwL1O0/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "Competitor Name": "={{ $json['Competitor Name'] }}",
+              "URL": "={{ $json.URL }}",
+              "Last updated": "={{ $today.format('yyyy-MM-dd')}}",
+              "Previous Pricing": "={{ $('AI Agent').item.json.output.pricing_summary }}",
+              "Differences - Summary": "={{ $('AI Agent').item.json.output.differences_summary }}"
+            },
+            "matchingColumns": [
+              "Competitor Name"
+            ],
+            "schema": [
+              {
+                "id": "Competitor Name",
+                "displayName": "Competitor Name",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "URL",
+                "displayName": "URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Last updated",
+                "displayName": "Last updated",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Previous Pricing",
+                "displayName": "Previous Pricing",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "Differences - Summary",
+                "displayName": "Differences - Summary",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "row_number",
+                "displayName": "row_number",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "number",
+                "canBeUsedToMatch": true,
+                "readOnly": true,
+                "removed": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1152,
+          -160
+        ],
+        "id": "c9924bf0-613e-4572-91df-f2071fbe9877",
+        "name": "Update row in sheet",
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "VwiXvSflzjrFnxEx",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Competitor Data:\nCompetitor Data:\n{{ JSON.stringify($json.Competitors.map(item => ({\n  Competitor: item['Competitor Name'],\n  'Differences - Summary': item['Differences - Summary']\n})), null, 2) }}",
+          "options": {
+            "systemMessage": "you are a competitive intelligence analyst. Your role is to synthesize pricing data from multiple competitors and create actionable business intelligence report.\n\nThe input is Competitor Data.\n\nAnalyze the provided competitor pricing data and create a professional summary that highlights key pricing changes\n\nWrite in a clear, business-focused tone suitable for executives and strategy teams.\n\nIf no significant changes are detected, state : 'No changes in pricing for any plans.' No need to expand beyond this.\n\nThe output should be in HTML format. HTML Email Formatting Rules:\n\n-Use a clean, modern business email design.\n-Use bold text for competitor names, pricing changes, and important findings.\n-Add a clear main heading: \"Competitor Pricing Update\".\n- If there is a change: in table use these table heading: Item, Precious price, Current Price, Difference\n-Create a separate section for each competitor.\n-Highlight detected pricing changes with a light yellow background.\n-Highlight \"No Changes\" with a light green background.\n-Use tables where helpful to organize pricing comparisons.\n-Use inline CSS for styling, compatible with Gmail.\n-Use only the competitor data provided. Do not invent changes.\n- do not add any additional coments about how the data was gathered.\n-Return only valid HTML code, without Markdown code fences.\n- Return only the final HTML email content. Do not include any followup suggestions or offers."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 3.1,
+        "position": [
+          1872,
+          -128
+        ],
+        "id": "b1cf1cec-89dd-4f6d-9577-d090e48377a7",
+        "name": "AI Agent1"
+      },
+      {
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "value": "gpt-4o-mini",
+            "mode": "list",
+            "cachedResultName": "gpt-4o-mini"
+          },
+          "builtInTools": {},
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.3,
+        "position": [
+          1856,
+          16
+        ],
+        "id": "c2648e4f-c7c7-4be9-9c63-61aea2f19285",
+        "name": "OpenAI Chat Model1",
+        "credentials": {
+          "openAiApi": {
+            "id": null,
+            "name": "",
+            "__aiGatewayManaged": true
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sendTo": "milapele123@gmail.com",
+          "subject": "=Daily Competitive Princing report - {{ $today.format('MMMM dd, yyyy') }}",
+          "message": "={{ $json.output }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          2240,
+          -144
+        ],
+        "id": "55625aa1-b759-46e9-9ae5-bc588c598dc2",
+        "name": "Send a message",
+        "webhookId": "04df3256-3055-4117-8b5b-c0f12f98bcfc",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "XET5OSOBHV6E8Bla",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://data.decodo.com/v1/scrape",
+          "authentication": "genericCredentialType",
+          "genericAuthType": "httpHeaderAuth",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"url\": \"{{ $fromAI('url', 'Website URL to scrape', 'string') }}\",\n  \"proxy_pool\": \"premium\",\n  \"headless\": \"html\",\n  \"markdown\": true\n}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequestTool",
+        "typeVersion": 4.5,
+        "position": [
+          608,
+          -64
+        ],
+        "id": "0a90fd48-d77f-40a6-842e-bac6058149f8",
+        "name": "HTTP Request",
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "MMqr4kijx5xvddpA",
+            "name": "Header Auth account 3"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "Competitors",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1,
+        "position": [
+          1376,
+          -160
+        ],
+        "id": "198f9f26-39ae-44f3-9447-2fc8ac55e116",
+        "name": "Aggregate"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "ae7f4f6b-45c5-4f3f-b736-e496527b1537",
+                "leftValue": "={{ $json.Competitors[0]['Differences - Summary'] }}",
+                "rightValue": "No Changes",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "91599bf8-6ea3-4dbb-baaa-3c755aebc496",
+                "leftValue": "={{ $json.Competitors[1]['Differences - Summary'] }}",
+                "rightValue": "No Changes",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              },
+              {
+                "id": "f366ebae-1292-46ba-afa8-0e507d9e6175",
+                "leftValue": "={{ $json.Competitors[2]['Differences - Summary'] }}",
+                "rightValue": "No Changes",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1600,
+          -160
+        ],
+        "id": "173f864d-ed49-48e5-8432-a0b98b1ebaa9",
+        "name": "Are there any changes?"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 1
+            },
+            {
+              "node": "AI Agent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_outputParser",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "node": "Merge",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "node": "Update row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update row in sheet": {
+        "main": [
+          [
+            {
+              "node": "Aggregate",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "AI Agent1",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "AI Agent1": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "ai_tool": [
+          [
+            {
+              "node": "AI Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "node": "Are there any changes?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Are there any changes?": {
+        "main": [
+          [],
+          [
+            {
+              "node": "AI Agent1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Rebeka  ",
+    "name": "workflow_v0.1",
+    "description": "Everything made from 0 from the begining",
+    "autosaved": true,
+    "workflowPublishHistory": [
+      {
+        "createdAt": "2026-10-21T16:18:27.704Z",
+        "id": 22,
+        "workflowId": "nvWXywZVZQDG4iM0",
+        "versionId": "986e4dd9-7bd8-4e5b-b0a0-6b9d8bd83962",
+        "event": "activated",
+        "userId": "ea6773f0-46dc-4518-82c4-a048fdad57ec"
+      },
+      {
+        "createdAt": "2026-10-21T16:37:48.701Z",
+        "id": 23,
+        "workflowId": "nvWXywZVZQDG4iM0",
+        "versionId": "986e4dd9-7bd8-4e5b-b0a0-6b9d8bd83962",
+        "event": "deactivated",
+        "userId": "ea6773f0-46dc-4518-82c4-a048fdad57ec"
+      },
+      {
+        "createdAt": "2026-10-21T16:38:36.761Z",
+        "id": 24,
+        "workflowId": "nvWXywZVZQDG4iM0",
+        "versionId": "986e4dd9-7bd8-4e5b-b0a0-6b9d8bd83962",
+        "event": "activated",
+        "userId": "ea6773f0-46dc-4518-82c4-a048fdad57ec"
+      }
+    ]
+  },
+  "homeProject": {
+    "id": "R27ajyixFT2TdXiU",
+    "type": "personal",
+    "name": "Rebeka   <rebeka.donska@gmail.com>",
+    "icon": null
+  },
+  "sharedWithProjects": [],
+  "usedCredentials": [
+    {
+      "id": "MMqr4kijx5xvddpA",
+      "name": "Header Auth account 3",
+      "type": "httpHeaderAuth",
+      "currentUserCanUse": true,
+      "homeProject": {
+        "id": "R27ajyixFT2TdXiU",
+        "type": "personal",
+        "name": "Rebeka   <rebeka.donska@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    },
+    {
+      "id": "VwiXvSflzjrFnxEx",
+      "name": "Google Sheets account",
+      "type": "googleSheetsOAuth2Api",
+      "currentUserCanUse": true,
+      "homeProject": {
+        "id": "R27ajyixFT2TdXiU",
+        "type": "personal",
+        "name": "Rebeka   <rebeka.donska@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    },
+    {
+      "id": "XET5OSOBHV6E8Bla",
+      "name": "Gmail account",
+      "type": "gmailOAuth2",
+      "currentUserCanUse": true,
+      "homeProject": {
+        "id": "R27ajyixFT2TdXiU",
+        "type": "personal",
+        "name": "Rebeka   <rebeka.donska@gmail.com>",
+        "icon": null
+      },
+      "sharedWithProjects": []
+    }
+  ],
+  "scopes": [
+    "execution:delete",
+    "execution:list",
+    "execution:read",
+    "execution:reveal",
+    "workflow:create",
+    "workflow:delete",
+    "workflow:disableRedaction",
+    "workflow:enableRedaction",
+    "workflow:execute",
+    "workflow:execute-chat",
+    "workflow:export",
+    "workflow:import",
+    "workflow:list",
+    "workflow:move",
+    "workflow:publish",
+    "workflow:read",
+    "workflow:share",
+    "workflow:unpublish",
+    "workflow:unshare",
+    "workflow:update"
+  ],
+  "checksum": "f22de85147b388844e9755757e1105c946f7e1417d3d0b445a36a7688fb36c4f"
+}
