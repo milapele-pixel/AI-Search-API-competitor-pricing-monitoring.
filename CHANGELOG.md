@@ -1,6 +1,6 @@
 ## [v0.5] - 2026-10-21
 ### Changes
-- Updated n8n workflow (workflow_v0.5.json).
+- Updated n8n workflow ( [workflow_v0.5.json](workflow_v0.5.json)).
 - Added the workflow JSON file to the GitHub repository.
 - Added an IF node to prevent unnecessary email notifications.
 
@@ -60,9 +60,9 @@
 
 ## [v0.2] - 2026-10-21
 ### Changes
-- Added[README.md](README.md)
+- Added [README.md](README.md)
 
-- Added[Documentation](Documentation)
+- Added [Documentation](Documentation)
 ### Reason
 - for easier workflow understanding, if another person takes it over
 ### Status
@@ -76,7 +76,7 @@
 
 ## [v0.1] - 2026-10-21
 ### Changes
-- Added initial n8n workflow (workflow_v0.1.json).
+- Added initial n8n workflow ( [workflow_v0.1.json](workflow_v0.1.json)).
 - Added the workflow JSON file to the GitHub repository.
 ### Reason
 - Initial version saved for tracking and documentation.
