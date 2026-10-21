@@ -76,7 +76,7 @@
 
 ## [v0.1] - 2026-10-21
 ### Changes
-- Added initial n8n workflow (`workflow_v0.1.json`).
+- Added initial n8n workflow (workflow_v0.1.json).
 - Added the workflow JSON file to the GitHub repository.
 ### Reason
 - Initial version saved for tracking and documentation.
