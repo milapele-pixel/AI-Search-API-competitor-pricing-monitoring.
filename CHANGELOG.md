@@ -1,3 +1,14 @@
+## [v0.5] - 2026-10-21
+### Added
+- Updated n8n workflow (`workflow_v0.5.json`).
+- Added the workflow JSON file to the GitHub repository.
+- Added an IF node to prevent unnecessary email notifications.
+### Status
+- Published prototype.
+- Workflow with the IF node.
+- T06 issue resolved based on previous testing in v0.4.
+
+
 ## [v0.4] - 2026-10-21
 ### Added
 - [CI_for_T06](CI_for_T06.md)
