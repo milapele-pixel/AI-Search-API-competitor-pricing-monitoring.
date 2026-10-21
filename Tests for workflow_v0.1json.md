@@ -23,6 +23,8 @@ The workflow saves the comparison results and sends a consolidated report throug
 
 The input shows a price of `$10.00`, while the output contains `$10`. The `differences_summary` field remains `No Changes`.
 
+![T04: Equivalent price formats correctly reported as No Changes](T04.png)
+
 This is the expected result because the numerical price is unchanged; only its written format differs.
 
 ## Example of a Test That Revealed a Problem
@@ -30,6 +32,8 @@ This is the expected result because the numerical price is unchanged; only its w
 ### T03 — A Price Change Was Not Reported
 
 The AI Agent’s input showed free credits worth `$9`, while the output changed this value to `$10`. However, `differences_summary` still reported `No Changes`.
+
+![T03: Price changed from $9 to $10 but the result reported No Changes](T03.png)
 
 One possible explanation is that the System Message did not provide detailed instructions for each output field, while the field names were defined only in the Structured Output Parser.
 
