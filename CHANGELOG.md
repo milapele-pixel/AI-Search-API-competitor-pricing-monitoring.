@@ -15,7 +15,7 @@
 
 ### Notes:
 - Candidate for publication
-- In need to fix also the test T03 and T04
+- In need to fix also the test T03 and T02
 
 
 ## [v0.4] - 2026-10-21
