@@ -1,0 +1,38 @@
+## AI search competitor Pricing and Monitoring documentation
+### What this solves:
+AI Competitor Pricing Monitoring is an n8n automation prototype that checks competitor pricing pages on a schedule. It uses Decodo to collect web data and OpenAI to compare current prices with previous pricing stored in Google Sheets. The workflow saves the comparison results and sends a consolidated email report through Gmail, helping users track pricing changes with less manual work. 
+
+### The workflow:
+
+**Schedule → read Google Sheets → collect pricing → AI comparison → update Sheets → generate report → Gmail**
+
+- The first run establishes a pricing baseline, and subsequent runs compare current pricing with previously stored data and email a summary of the results. 
+- The workflow uses competitor names, pricing-page URLs, and previously stored pricing as inputs, and produces updated pricing information, a check date, a summary of detected differences, and a consolidated email report.
+- AI extracts and compares competitor pricing and writes a consolidated email report, but it may confuse monthly and annual prices, miss pricing plans, or incorrectly report changes when previous data is incomplete.
+- The spreadsheet is selected in the Google Sheets nodes, the report recipient is set in the Gmail node, and the monitoring schedule is configured in the Schedule Trigger node in n8n.
+- API keys and Google connections should be stored in n8n Credentials
+- Users should verify detected changes against the original pricing pages before making business decisions. Review initial runs and unexpected or unclear results before enabling unattended monitoring.
+- This prototype may encounter scraping failures, website layout changes, AI errors, API limits, expired credentials, or failed spreadsheet updates and email delivery, so pricing accuracy, error handling, and scheduled execution still need testing before real use.
+
+For this workflow to work it is required to have:
+- An n8n account for workflow
+- Decodo and OpenAI API for workflow AI agents
+- Google account for Google Sheets
+- Gmail access for reports
+
+Instructions:
+
+1. Download the AI_Searchtool_price_comp_workflow.json and import it into n8n.
+2. Import Workflow in n8n
+3. Configure the OpenAI, Decodo, Google Sheets, and Gmail credentials in n8n
+4. create the columns your workflow uses, such as Competitor Name, URL, Previous Pricing, Last updated, and Differences - Summary
+5. select the spreadsheet, set the report recipient, and choose the monitoring schedule
+
+Usage
+Add competitor names and pricing-page URLs to the spreadsheet.
+Click in n8n ‘Execute’’
+Review the pricing information and comparison results in Google Sheets.
+Check Gmail for the consolidated report.
+Publish or activate the workflow to run it on the configured schedule.
+
+
