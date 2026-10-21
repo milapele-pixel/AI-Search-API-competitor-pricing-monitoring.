@@ -1,6 +1,6 @@
 ## [v0.3] - 2026-10-21
 ### Added
-- [Tests for workflow_v0.1json.md](Tests for workflow_v0.1json.md)
+- [Tests for workflow_v0.1json.md](Tests%20for%20workflow_v0.1json.md)
 ### Status
 - Executed 6 tests for the workflow without an IF node.
 - Created a copy of the original n8n workflow for testing.
@@ -17,6 +17,7 @@
 ## [v0.2] - 2026-10-21
 ### Added
 - [README.md](README.md)
+
 -[Documentation](Documentation)
 ### Status
 - Documented prototype for the workflow without IF node.
