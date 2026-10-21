@@ -1,3 +1,17 @@
+## [v0.4] - 2026-10-21
+### Added
+- [CI_for_T06](CI_for_T06.md)
+### Status
+- Created a copy of the original n8n workflow for testing.
+- The original n8n workflow remained unchanged.
+- 5/6 tests passed the test from previous [Tests for workflow_v0.1json.md](Tests%20for%20workflow_v0.1json.md).
+- T03 partially passed; T06 succeded.
+### Notes
+- T06 issue was resolved in the testing workflow copy.
+- The fix has not yet been applied to the original workflow.
+
+
+
 ## [v0.3] - 2026-10-21
 ### Added
 - [Tests for workflow_v0.1json.md](Tests%20for%20workflow_v0.1json.md)
@@ -18,7 +32,7 @@
 ### Added
 - [README.md](README.md)
 
--[Documentation](Documentation)
+- [Documentation](Documentation)
 ### Status
 - Documented prototype for the workflow without IF node.
 - No changes to the n8n workflow JSON.
